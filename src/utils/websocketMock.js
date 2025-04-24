@@ -1,20 +1,35 @@
 export const startMockWebSocket = (dispatch) => {
-  const assets = ['bitcoin', 'ethereum', 'tether', 'ripple', 'bnb'];
+  const volatilityMap = {
+    'bitcoin': 0.02,
+    'ethereum': 0.025,
+    'tether': 0.001,
+    'ripple': 0.03,
+    'bnb': 0.015
+  };
   
   setInterval(() => {
-    assets.forEach((assetId) => {
-      // Generate more realistic price movements
-      const priceChange = (Math.random() - 0.5) * 0.001; // 0.1% max change
-      const volumeChange = (Math.random() - 0.5) * 0.02; // 2% max change
+    Object.entries(volatilityMap).forEach(([assetId, volatility]) => {
+      // Generate more realistic price movements based on asset volatility
+      const priceChange = (Math.random() - 0.5) * volatility;
+      const volumeChange = (Math.random() - 0.5) * (volatility * 2); // Volume changes more than price
 
       const updates = {
         price: (prevState) => {
           const currentPrice = prevState.assets.find(a => a.id === assetId).price;
           return currentPrice * (1 + priceChange);
         },
-        priceChange1h: (Math.random() * 2 - 1).toFixed(2), // -1% to +1%
-        priceChange24h: (Math.random() * 4 - 2).toFixed(2), // -2% to +2%
-        priceChange7d: (Math.random() * 10 - 5).toFixed(2), // -5% to +5%
+        priceChange1h: (prevState) => {
+          const asset = prevState.assets.find(a => a.id === assetId);
+          return Number(asset.priceChange1h) + (Math.random() - 0.5) * volatility * 100;
+        },
+        priceChange24h: (prevState) => {
+          const asset = prevState.assets.find(a => a.id === assetId);
+          return Number(asset.priceChange24h) + (Math.random() - 0.5) * volatility * 200;
+        },
+        priceChange7d: (prevState) => {
+          const asset = prevState.assets.find(a => a.id === assetId);
+          return Number(asset.priceChange7d) + (Math.random() - 0.5) * volatility * 500;
+        },
         volume24h: (prevState) => {
           const currentVolume = prevState.assets.find(a => a.id === assetId).volume24h;
           return currentVolume * (1 + volumeChange);

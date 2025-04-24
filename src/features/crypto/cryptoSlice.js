@@ -1,5 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// Helper to generate initial historical data
+const generateHistoricalData = (basePrice, volatility) => {
+  const points = [];
+  let price = basePrice;
+  for (let i = 0; i < 50; i++) {
+    price = price * (1 + (Math.random() - 0.5) * volatility);
+    points.push(price);
+  }
+  return points;
+};
+
 const initialState = {
   assets: [
     {
@@ -15,6 +26,7 @@ const initialState = {
       volume24h: 43874950947,
       circulatingSupply: 19850000,
       maxSupply: 21000000,
+      historicalPrices: generateHistoricalData(93759.48, 0.02),
     },
     {
       id: 'ethereum',
@@ -29,6 +41,7 @@ const initialState = {
       volume24h: 23547469307,
       circulatingSupply: 120710000,
       maxSupply: null,
+      historicalPrices: generateHistoricalData(1802.46, 0.025),
     },
     {
       id: 'tether',
@@ -43,6 +56,7 @@ const initialState = {
       volume24h: 92288882007,
       circulatingSupply: 145270000000,
       maxSupply: null,
+      historicalPrices: generateHistoricalData(1.00, 0.001),
     },
     {
       id: 'ripple',
@@ -57,6 +71,7 @@ const initialState = {
       volume24h: 5131481491,
       circulatingSupply: 58390000000,
       maxSupply: 100000000000,
+      historicalPrices: generateHistoricalData(2.22, 0.03),
     },
     {
       id: 'bnb',
@@ -71,6 +86,7 @@ const initialState = {
       volume24h: 1874281784,
       circulatingSupply: 140890000,
       maxSupply: 200000000,
+      historicalPrices: generateHistoricalData(606.65, 0.015),
     },
   ],
 };
@@ -92,6 +108,8 @@ const cryptoSlice = createSlice({
           // Update market cap when price changes
           if (key === 'price') {
             updatedAsset.marketCap = updatedAsset.price * updatedAsset.circulatingSupply;
+            // Update historical prices
+            updatedAsset.historicalPrices = [...updatedAsset.historicalPrices.slice(1), updatedAsset.price];
           }
         });
         

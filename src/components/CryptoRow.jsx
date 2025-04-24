@@ -30,6 +30,30 @@ const CryptoRow = ({ asset }) => {
     }).format(supply)} ${symbol}`;
   };
 
+  const generateChartPath = (prices) => {
+    if (!prices || prices.length === 0) return '';
+
+    const width = 160;
+    const height = 60;
+    const padding = 5;
+
+    // Find min and max for scaling
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    const priceRange = maxPrice - minPrice;
+
+    // Scale points to fit the chart
+    const xStep = (width - 2 * padding) / (prices.length - 1);
+    const scaleY = (height - 2 * padding) / priceRange;
+
+    // Generate path
+    return prices.reduce((path, price, i) => {
+      const x = padding + i * xStep;
+      const y = height - padding - (price - minPrice) * scaleY;
+      return path + `${i === 0 ? 'M' : 'L'} ${x},${y} `;
+    }, '');
+  };
+
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-50">
       <td className="px-4 py-4 text-sm">{asset.rank}</td>
@@ -71,10 +95,10 @@ const CryptoRow = ({ asset }) => {
         <div className="w-[160px] h-[60px]">
           <svg viewBox="0 0 160 60" className="w-full h-full">
             <path
-              d="M0,30 Q40,20 80,40 T160,30"
+              d={generateChartPath(asset.historicalPrices)}
               fill="none"
               stroke={asset.priceChange7d >= 0 ? "#22c55e" : "#ef4444"}
-              strokeWidth="2"
+              strokeWidth="1.5"
             />
           </svg>
         </div>
