@@ -20,4 +20,10 @@ A responsive React + Redux Toolkit app that tracks crypto prices in real-time, s
 - Mocked WebSocket (via custom `websocketMock.js`)
 
 ## 🏗 Project Structure
+src/ ├── components/ │ ├── CryptoRow.jsx │ └── CryptoTable.jsx ├── features/ │ └── crypto/ │ ├── cryptoSlice.js │ └── selectors.js ├── utils/ │ └── websocketMock.js ├── store.js └── main.jsx
+
+
+## 📹 Demo
+
+![Demo](demo/demo.gif)
 
